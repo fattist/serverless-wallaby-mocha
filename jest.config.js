@@ -1,7 +1,9 @@
 module.exports = {
     preset: 'ts-jest',
     moduleNameMapper: {
-        "^@authorizers/(.*)$": "<rootDir>/authorizers/$1",
-        "^@services/(.*)$": "<rootDir>/services/$1"
+        "^@authorizers/(.*)$": "<rootDir>/src/authorizers/$1",
+        "^@helpers/(.*)$": "<rootDir>/src/helpers/$1",
+        "^@routes/(.*)$": "<rootDir>/src/routes/$1",
+        "^@services/(.*)$": "<rootDir>/src/services/$1"
     }
 }

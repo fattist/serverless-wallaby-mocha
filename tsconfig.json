@@ -10,8 +10,10 @@
     "outDir": ".dist",
     "baseUrl": ".",
     "paths": {
-      "@authorizers/*": ["authorizers/*"],
-      "@services/*": ["services/*"]
+      "@authorizers/*": ["src/authorizers/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@routes/*": ["src/routes/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "include": ["./**/*.ts"],

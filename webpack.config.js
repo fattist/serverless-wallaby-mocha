@@ -9,13 +9,19 @@ module.exports = {
   entry: slsw.lib.entries,
   devtool: slsw.lib.webpack.isLocal ? 'cheap-module-eval-source-map' : 'source-map',
   resolve: {
-    extensions: ['.mjs', '.json', '.ts'],
+    extensions: ['.ts'],
     symlinks: false,
     cacheWithContext: false,
+    alias: {
+      '@authorizers': path.resolve(__dirname, 'src', 'authorizers'),
+      '@helpers': path.resolve(__dirname, 'src', 'helpers'),
+      '@routes': path.resolve(__dirname, 'src', 'routes'),
+      '@services': path.resolve(__dirname, 'src', 'services')
+    }
   },
   output: {
     libraryTarget: 'commonjs',
-    path: path.join(__dirname, '.webpack'),
+    path: path.join(__dirname, '.dist'),
     filename: '[name].js',
   },
   target: 'node',
@@ -43,19 +49,13 @@ module.exports = {
     hints: false
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      eslint: {
-        files: './**/*.{ts,tsx,js,jsx}',
-        options: {
-          cache: true
-        }
-      }
-    })
-  ],
-  resolve: {
-    alias: {
-      '@authorizers': path.resolve(__dirname, 'authorizers'),
-      '@services': path.resolve(__dirname, 'services')
-    }
-  }
+    // new ForkTsCheckerWebpackPlugin({
+    //   eslint: {
+    //     files: './**/*.{ts,tsx,js,jsx}',
+    //     options: {
+    //       cache: true
+    //     }
+    //   }
+    // })
+  ]
 };

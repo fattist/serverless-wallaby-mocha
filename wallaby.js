@@ -12,8 +12,10 @@ module.exports = w => {
         },
         files: [
             'tsconfig.json',
-            'authorizers/*.ts',
-            'services/*.ts',
+            'src/authorizers/*.ts',
+            'src/helpers/*.ts',
+            'src/routes/*.ts',
+            'src/services/*.ts',
         ],
         setup: ctx => {
             const mocha = ctx.testFramework;

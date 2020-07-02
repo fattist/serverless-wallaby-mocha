@@ -1,3 +1,4 @@
+stage: development
 service:
   name: proto
 
@@ -11,6 +12,7 @@ custom:
 
 plugins:
   - serverless-webpack
+  - serverless-offline
 
 provider:
   name: aws
@@ -21,9 +23,8 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
 
 functions:
-  hello:
-    handler: handler.hello
+  index:
+    handler: handler.index
     events:
-      - http:
-          method: get
-          path: hello
+      - http: GET /
+      - http: 'GET {proxy+}'
