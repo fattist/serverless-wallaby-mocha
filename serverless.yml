@@ -1,30 +1,57 @@
-stage: development
-service:
-  name: proto
-
-package:
-  individually: true
-
-custom:
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
-
-plugins:
-  - serverless-webpack
-  - serverless-offline
-
+service: prototype
 provider:
   name: aws
+  stage: alpha
+  region: us-west-2
   runtime: nodejs12.x
   apiGateway:
     minimumCompressionSize: 1024
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
 
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
 functions:
+  auth0:
+    handler: auth0.authorize
   index:
     handler: handler.index
     events:
-      - http: GET /
-      - http: 'GET {proxy+}'
+      - http:
+          path: /{proxy+}
+          method: get
+          authorizer: auth0
+          cors: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+resources:
+  Resources:
+    GatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: EXPIRED_TOKEN
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'
+    AuthFailureGatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: UNAUTHORIZED
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'

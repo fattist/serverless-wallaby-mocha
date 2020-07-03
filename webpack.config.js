@@ -49,13 +49,13 @@ module.exports = {
     hints: false
   },
   plugins: [
-    // new ForkTsCheckerWebpackPlugin({
-    //   eslint: {
-    //     files: './**/*.{ts,tsx,js,jsx}',
-    //     options: {
-    //       cache: true
-    //     }
-    //   }
-    // })
+    new ForkTsCheckerWebpackPlugin({
+      eslint: {
+        files: './src/**/*.{ts,tsx,js,jsx}',
+        options: {
+          cache: true
+        }
+      }
+    })
   ]
 };
