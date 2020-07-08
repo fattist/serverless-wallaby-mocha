@@ -72,7 +72,11 @@ const generatePolicy = (decoded: any, effect: string, resource: string): Authori
             Statement: [{
                 Action: 'execute-api:Invoke',
                 Effect: effect,
-                Resource: resource,
+                Resource: [
+                    resource.replace(/([/])(\W|\w)+[/]$/, '/'),
+                    resource.replace(/([/])(\W|\w)+[/]$/, '/*'),
+                    resource.replace(/([/])(\W|\w)+[/]$/, '/*/*')
+                ],
             }]
         }
 

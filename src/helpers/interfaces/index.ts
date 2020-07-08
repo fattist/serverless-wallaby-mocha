@@ -7,7 +7,7 @@ export interface Authorizer {
         Statement: [{
             Action: string,
             Effect: string,
-            Resource: string
+            Resource: string[]
         }]
     },
     context?: object
