@@ -5,8 +5,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 export const defaults = {
     index: async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-        const message = 'index';
-        const payload: Response = { statusCode: 200, body: { message: message, input: event } };
+        const exp = new Date(event.requestContext.authorizer.exp * 1000);
+        const payload: Response = { statusCode: 200, body: { expiration: exp, user: event.requestContext } };
         return { ...payload, body: JSON.stringify(payload.body, null, 2) };
     }
 }

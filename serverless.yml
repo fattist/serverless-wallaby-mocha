@@ -16,13 +16,21 @@ custom:
 
 functions:
   auth0:
-    handler: auth0.authorize
+    handler: handler.authenticate
+    environment:
+      A0_ALGORITHM: RS256
+      A0_DOMAIN: mhp.us.auth0.com
   index:
     handler: handler.index
     events:
       - http:
-          path: /{proxy+}
+          path: /
           method: get
+          authorizer: auth0
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: any
           authorizer: auth0
           cors: true
 
@@ -32,26 +40,3 @@ package:
 plugins:
   - serverless-webpack
   - serverless-offline
-
-resources:
-  Resources:
-    GatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: EXPIRED_TOKEN
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-        StatusCode: '401'
-    AuthFailureGatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: UNAUTHORIZED
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-        StatusCode: '401'

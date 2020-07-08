@@ -9,10 +9,11 @@ export interface Authorizer {
             Effect: string,
             Resource: string
         }]
-    }
+    },
+    context?: object
 }
 
-export interface Callback { (err: string|null, handler?: any): void }
+export interface Callback { (err: any|null, handler?: any): void }
 
 export interface Route {
     [key: string]: APIGatewayProxyHandler

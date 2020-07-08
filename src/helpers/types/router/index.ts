@@ -1,10 +1,8 @@
-import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
-
 export type Response = {
     statusCode: number,
     body: {
-        message: string,
-        input?: APIGatewayProxyEvent
+        expiration: Date,
+        user: { [key: string]: any }
     },
     isBase64Encoded?: boolean,
     headers?: {

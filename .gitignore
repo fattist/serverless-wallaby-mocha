@@ -8,6 +8,13 @@ jspm_packages
 # Webpack directories
 .webpack
 
-#
+# Build/Dev files
 .dist
 .eslintcache
+
+# NPM
+package-lock.json
+
+# Secrets
+.vault/**/*
+!.vault/.gitkeep
