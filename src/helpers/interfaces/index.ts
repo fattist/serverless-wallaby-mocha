@@ -10,7 +10,7 @@ export interface Authorizer {
             Resource: string[]
         }]
     },
-    context?: object
+    context?: { [key: string]: any }
 }
 
 export interface Callback { (err: any|null, handler?: any): void }
