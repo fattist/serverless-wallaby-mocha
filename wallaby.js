@@ -21,25 +21,6 @@ module.exports = w => {
             'src/services/*.ts',
         ],
         setup: ctx => {
-            const mocha = ctx.testFramework;
-            const chai = require('chai');
-            const sinon = require('sinon');
-            const sc = require('sinon-chai');
-
-            chai.use(sc);
-
-            mocha.suite.beforeEach('sinon-before', function() {
-               if (null == this.sinon) {
-                   this.sinon = sinon.createSandbox();
-               }
-            });
-
-            mocha.suite.afterEach('sinon-after', function() {
-                if (this.sinon && 'function' === typeof this.sinon.restore) {
-                    this.sinon.restore();
-                }
-            });
-
             if (global._tsconfigPathsRegistered) return;
 
             const tsConfigPaths = require('tsconfig-paths');
