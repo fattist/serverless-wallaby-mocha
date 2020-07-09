@@ -5,8 +5,8 @@ import { Context } from 'aws-lambda';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
 
-import * as lang from '@helpers/i18n/authorizer';
-import { Authorizer, Callback } from '@helpers/interfaces';
+import { Responses as lang } from '@i18n/authorizer';
+import { Authorizer, Callback } from '@helpers/interfaces/all';
 
 export const authorize = (event: any, _context: Context, callback: Callback): void => {
     const authToken = stripTokenFromHeader(event, callback);
@@ -19,11 +19,11 @@ export const authorize = (event: any, _context: Context, callback: Callback): vo
     authenticateToken(authClient, authToken, decodedToken.header.kid, event, callback);
 }
 
-const authenticateToken = (authClient: any, authToken: string, decodedToken: string, event: any, callback: Callback) => {
+export const authenticateToken = (authClient: any, authToken: string, decodedToken: string, event: any, callback: Callback) => {
     authClient.getSigningKey(decodedToken, (error: any, key: any) => {
         if (error) {
-            console.error(error);
-            return callback(new Error(lang.INTERNAL_SERVER_ERROR));
+            console.error('ERROR', error);
+            return callback(lang.ERROR);
         } else {
             const signingKey: string = getSigningKey(key);
 
@@ -32,20 +32,21 @@ const authenticateToken = (authClient: any, authToken: string, decodedToken: str
                     algorithms: process.env.A0_ALGORITHM
                 }, (error, decoded) => {
                     if (error) {
-                        return callback(new Error(lang.UNAUTHORIZED));
+                        console.error('VERIFY', error);
+                        return callback(lang.UNAUTHORIZED);
                     } else {
                         return callback(null, generatePolicy(decoded, 'Allow', event.methodArn));
                     }
                 });
             } catch (error) {
                 console.error('EXCEPTION', error);
-                return callback(new Error(lang.UNAUTHORIZED));
+                return callback(lang.ERROR);
             }
         }
     });
 }
 
-const decodeToken = (token: string, callback: Callback) => {
+export const decodeToken = (token: string, callback: Callback) => {
     let decode;
 
     try {
@@ -53,17 +54,18 @@ const decodeToken = (token: string, callback: Callback) => {
             complete: true
         });
     } catch (err) {
-        return callback(new Error(lang.UNPROCESSABLE));
+        console.error('DECODE', err);
+        return callback(lang.ERROR);
     } finally {
         if (!decode) {
-            return callback(new Error(lang.UNAUTHORIZED));
+            return callback(lang.UNAUTHORIZED);
         } else {
             return decode;
         }
     }
 }
 
-const generatePolicy = (decoded: any, effect: string, resource: string): Authorizer => {
+export const generatePolicy = (decoded: any, effect: string, resource: string): Authorizer => {
     const response: Authorizer = { principalId: decoded.sub };
 
     if (effect && resource) {
@@ -86,17 +88,17 @@ const generatePolicy = (decoded: any, effect: string, resource: string): Authori
     return response
 }
 
-const getSigningKey = (key: any): string => (key.publicKey || key.rsaPublicKey);
+export const getSigningKey = (key: any): string => (key.publicKey || key.rsaPublicKey);
 
-const stripTokenFromHeader = (event:any, callback: Callback) => {
+export const stripTokenFromHeader = (event:any, callback: Callback) => {
     if (!event.authorizationToken) {
-        return callback(new Error(lang.BAD_REQUEST));
+        return callback(lang.UNAUTHORIZED);
     }
 
     const authToken = event.authorizationToken.split(' ')[1];
     
     if (!authToken) {
-        return callback(new Error(lang.UNAUTHORIZED));
+        return callback(lang.UNAUTHORIZED);
     } else {
         return authToken;
     }

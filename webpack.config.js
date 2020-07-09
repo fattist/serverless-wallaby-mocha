@@ -16,6 +16,7 @@ module.exports = {
     alias: {
       '@authorizers': path.resolve(__dirname, 'src', 'authorizers'),
       '@helpers': path.resolve(__dirname, 'src', 'helpers'),
+      '@i18n': path.resolve(__dirname, 'src', 'i18n'),
       '@routes': path.resolve(__dirname, 'src', 'routes'),
       '@services': path.resolve(__dirname, 'src', 'services')
     },

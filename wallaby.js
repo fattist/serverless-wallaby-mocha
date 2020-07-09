@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 module.exports = w => {
     return {
         compilers: {
@@ -13,7 +15,8 @@ module.exports = w => {
         files: [
             'tsconfig.json',
             'src/authorizers/*.ts',
-            'src/helpers/*.ts',
+            'src/helpers/*/*.ts',
+            'src/i18n/*.ts',
             'src/routes/*.ts',
             'src/services/*.ts',
         ],
