@@ -1,0 +1,67 @@
+service: mhd
+provider:
+  name: aws
+  stage: development
+  region: us-west-2
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  logs:
+    restApi: true
+  tags:
+    provider: serverless
+  tracing:
+    apiGateway: true
+  vpc:
+    securityGroupIds:
+      - ${ssm:/development/vpc/sg/apigw}
+    subnetIds: ${ssm:/development/vpc/subnet/private~split}
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+functions:
+  auth0:
+    handler: handler.authenticate
+    resultTtlInSeconds: 0
+    environment:
+      A0_ALGORITHM: RS256
+      A0_DOMAIN: mhp.us.auth0.com
+  index:
+    handler: handler.index
+    events:
+      - http:
+          path: /
+          method: get
+          authorizer: auth0
+          connectionType: vpc-link
+          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: any
+          authorizer: auth0
+          connectionType: vpc-link
+          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          cors: true
+  register:
+    handler: handler.register
+    events:
+      - http:
+          path: /register
+          method: get
+          connectionType: vpc-link
+          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          cors: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-step-functions

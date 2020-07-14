@@ -1,0 +1,20 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
+
+# Build/Dev files
+.dist
+.eslintcache
+
+# NPM
+package-lock.json
+
+# Secrets
+.vault/**/*
+!.vault/.gitkeep
