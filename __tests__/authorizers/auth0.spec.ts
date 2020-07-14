@@ -52,6 +52,7 @@ describe('auth0-authorizer', () => {
             const callback = sinon.spy();
 
             authenticateToken(authClient, authToken, 'bar', { methodArn: 'arn:aws:execute-api:us-west-2:xxx:xxx/*/GET/' }, callback);
+
             expect(callback.getCall(0).args).to.include(lang.UNAUTHORIZED);
         });
 
@@ -65,11 +66,7 @@ describe('auth0-authorizer', () => {
                     Statement: [{
                         Action: 'execute-api:Invoke',
                         Effect: 'Allow',
-                        Resource: [
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/',
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/*',
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/*/*'
-                        ],
+                        Resource: 'arn:aws:execute-api:us-west-2:xxx:xxx/*/*',
                     }]
                 },
                 principalId: opts.sub
@@ -145,11 +142,7 @@ describe('auth0-authorizer', () => {
                     Statement: [{
                         Action: 'execute-api:Invoke',
                         Effect: 'bar',
-                        Resource: [
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/',
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/*',
-                            'arn:aws:execute-api:us-west-2:xxx:xxx/*/*'
-                        ],
+                        Resource: 'arn:aws:execute-api:us-west-2:xxx:xxx/*/*',
                     }]
                 },
                 principalId: opts.sub

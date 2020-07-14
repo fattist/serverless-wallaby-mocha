@@ -14,6 +14,7 @@ provider:
     provider: serverless
   tracing:
     apiGateway: true
+    lambda: true
   vpc:
     securityGroupIds:
       - ${ssm:/development/vpc/sg/apigw}
