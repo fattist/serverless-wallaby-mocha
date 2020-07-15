@@ -8,9 +8,5 @@ export const routes = {
         const exp = new Date(event.requestContext.authorizer.exp * 1000);
         const payload: Response = { statusCode: 200, body: { expiration: exp, user: event.requestContext } };
         return { ...payload, body: JSON.stringify(payload.body, null, 2) };
-    },
-    register: async (): Promise<APIGatewayProxyResult> => {
-        const payload = { statusCode: 200, body: { foo: "bar" } };
-        return { ...payload, body: JSON.stringify(payload.body, null, 2) };
     }
 }

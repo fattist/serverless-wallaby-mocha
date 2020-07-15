@@ -27,13 +27,13 @@ custom:
 
 functions:
   auth0:
-    handler: handler.authenticate
+    handler: handlers/authorizer.authenticate
     resultTtlInSeconds: 0
     environment:
       A0_ALGORITHM: RS256
       A0_DOMAIN: mhp.us.auth0.com
   index:
-    handler: handler.index
+    handler: handlers/proxy.index
     events:
       - http:
           path: /
@@ -50,7 +50,7 @@ functions:
           connectionId: ${ssm:/development/vpc/apigw/link~true}
           cors: true
   register:
-    handler: handler.register
+    handler: handlers/user.register
     events:
       - http:
           path: /register
