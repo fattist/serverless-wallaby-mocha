@@ -18,3 +18,13 @@ export interface Callback { (err: any|null, handler?: any): void }
 export interface Route {
     [key: string]: APIGatewayProxyHandler
 }
+
+export interface UserInfo {
+    sub: string,
+    nickname: string,
+    name: string,
+    picture: string,
+    updated_at: Date,
+    email: string,
+    email_verified: boolean
+}

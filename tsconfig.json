@@ -11,6 +11,7 @@
     "baseUrl": ".",
     "paths": {
       "@authorizers/*": ["src/authorizers/*"],
+      "@helpers/axios/*": ["src/helpers/axios/*"],
       "@helpers/interfaces/*": ["src/helpers/interfaces/*"],
       "@helpers/types/*": ["src/helpers/types/*"],
       "@i18n/*": ["src/i18n/*"],
