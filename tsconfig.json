@@ -16,7 +16,8 @@
       "@helpers/types/*": ["src/helpers/types/*"],
       "@i18n/*": ["src/i18n/*"],
       "@routes/*": ["src/routes/*"],
-      "@services/*": ["src/services/*"]
+      "@services/*": ["src/services/*"],
+      "@streams/*": ["src/streams/*"]
     }
   },
   "include": ["./**/*.ts"],

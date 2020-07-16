@@ -19,6 +19,7 @@ module.exports = w => {
             'src/i18n/*.ts',
             'src/routes/*.ts',
             'src/services/*.ts',
+            'src/streams/*.ts',
         ],
         setup: () => {
             if (global._tsconfigPathsRegistered) return;

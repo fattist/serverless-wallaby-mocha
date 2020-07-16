@@ -32,6 +32,9 @@ functions:
     environment:
       A0_ALGORITHM: RS256
       A0_DOMAIN: mhp.us.auth0.com
+  streamsUser:
+    handler: handlers/streams.user
+    onError: ${ssm:/development/sns/dlq}
   index:
     handler: handlers/proxy.index
     events:
