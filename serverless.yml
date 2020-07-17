@@ -17,8 +17,8 @@ provider:
     lambda: true
   vpc:
     securityGroupIds:
-      - ${ssm:/development/vpc/sg/apigw}
-    subnetIds: ${ssm:/development/vpc/subnet/private~split}
+      - ${ssm:/development/vpc/sg/apigw/id}
+    subnetIds: ${ssm:/development/vpc/subnet/private/arns~split}
 
 custom:
   webpack:
@@ -34,7 +34,15 @@ functions:
       A0_DOMAIN: mhp.us.auth0.com
   streamsUser:
     handler: handlers/streams.user
-    onError: ${ssm:/development/sns/dlq}
+    events:
+      - stream:
+          arn: ${ssm:/development/ddb/stream/arn}
+          batchSize: 100
+          startingPosition: TRIM_HORIZON
+          maximumRetryAttempts: 0
+          enabled: false
+          destinations:
+            onFailure: ${ssm:/development/sns/dlq/stream/arn}
   index:
     handler: handlers/proxy.index
     events:
@@ -43,14 +51,14 @@ functions:
           method: get
           authorizer: auth0
           connectionType: vpc-link
-          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
       - http:
           path: /{proxy+}
           method: any
           authorizer: auth0
           connectionType: vpc-link
-          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
   register:
     handler: handlers/user.register
@@ -59,7 +67,7 @@ functions:
           path: /register
           method: get
           connectionType: vpc-link
-          connectionId: ${ssm:/development/vpc/apigw/link~true}
+          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
 
 package:
@@ -69,3 +77,4 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-step-functions
+  # - serverless-plugin-warmup
