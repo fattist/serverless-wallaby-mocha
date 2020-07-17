@@ -40,7 +40,7 @@ functions:
           batchSize: 100
           startingPosition: TRIM_HORIZON
           maximumRetryAttempts: 0
-          enabled: false
+          enabled: true
           destinations:
             onFailure: ${ssm:/development/sns/dlq/stream/arn}
   index:
