@@ -1,3 +1,3 @@
 import { stream } from '@streams/users';
 
-export const users = stream;
+export const user = stream;

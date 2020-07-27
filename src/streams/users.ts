@@ -10,7 +10,8 @@ export const stream = (event, context): Promise<any> => {
         try {
             event.Records.forEach(async (record, idx) => {
                 if (!idx) {
-                    console.log(record.dynamodb.NewImage);
+                    console.log('trigger', record.dynamodb.NewImage);
+                    resolve(record.dynamodb.NewImage);
                 } else {
                     event.Records = [record];
                     const params = {

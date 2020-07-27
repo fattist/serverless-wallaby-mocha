@@ -12,9 +12,6 @@ jspm_packages
 .dist
 .eslintcache
 
-# NPM
-package-lock.json
-
 # Secrets
 .vault/**/*
 !.vault/.gitkeep

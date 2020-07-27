@@ -1,13 +1,15 @@
 service: mhd
 provider:
   name: aws
-  stage: development
-  region: us-west-2
-  runtime: nodejs12.x
+  stage: ${opt:stage, 'development'}
+  region: ${opt:region, 'us-west-2'}
+  runtime: ${opt:runtime, 'nodejs12.x'}
   apiGateway:
     minimumCompressionSize: 1024
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    ENVIRONMENT: ${self:provider.stage}
+    REGION: ${self:provider.region}
   logs:
     restApi: true
   tags:
@@ -19,6 +21,18 @@ provider:
     securityGroupIds:
       - ${ssm:/development/vpc/sg/apigw/id}
     subnetIds: ${ssm:/development/vpc/subnet/private/arns~split}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource:
+        - "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/*"
+    - Effect: "Allow"
+      Action:
+        - "xray:PutTraceSegments"
+        - "xray:PutTelemetryRecords"
+      Resource:
+        - "*"
 
 custom:
   webpack:
@@ -32,17 +46,6 @@ functions:
     environment:
       A0_ALGORITHM: RS256
       A0_DOMAIN: mhp.us.auth0.com
-  streamsUser:
-    handler: handlers/streams.user
-    events:
-      - stream:
-          arn: ${ssm:/development/ddb/stream/arn}
-          batchSize: 100
-          startingPosition: TRIM_HORIZON
-          maximumRetryAttempts: 0
-          enabled: false
-          destinations:
-            onFailure: ${ssm:/development/sns/dlq/stream/arn}
   index:
     handler: handlers/proxy.index
     events:
@@ -69,6 +72,34 @@ functions:
           connectionType: vpc-link
           connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
+  streamsUser:
+    handler: handlers/streams.user
+    events:
+      - stream:
+          arn: ${ssm:/development/ddb/stream/arn}
+          batchSize: 100
+          startingPosition: TRIM_HORIZON
+          maximumRetryAttempts: 0
+          enabled: true
+          destinations:
+            onFailure: ${ssm:/development/sns/dlq/stream/arn}
+  user:
+    handler: handlers/graphql.user
+    events:
+      - http:
+          path: /graphql
+          method: get
+          authorizer: auth0
+          connectionType: vpc-link
+          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
+          cors: true
+      - http:
+          path: /graphql
+          method: post
+          authorizer: auth0
+          connectionType: vpc-link
+          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
+          cors: true
 
 package:
   individually: true
@@ -77,4 +108,5 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-step-functions
+  - serverless-pseudo-parameters
   # - serverless-plugin-warmup
