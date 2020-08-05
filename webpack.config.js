@@ -15,6 +15,7 @@ module.exports = {
     cacheWithContext: false,
     alias: {
       '@authorizers': path.resolve(__dirname, 'src', 'authorizers'),
+      '@entities': path.resolve(__dirname, 'src', 'entities'),
       '@helpers': path.resolve(__dirname, 'src', 'helpers'),
       '@i18n': path.resolve(__dirname, 'src', 'i18n'),
       '@routes': path.resolve(__dirname, 'src', 'routes'),
