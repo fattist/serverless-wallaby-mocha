@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 
 import { A0 } from '@services/auth0';
 import { authenticateToken, decodeToken, generatePolicy, getSigningKey, stripTokenFromHeader } from '@authorizers/auth0';
-import { Responses as lang } from '@i18n/authorizer';
+import { Authorizer as lang } from '@i18n/authorizer';
 
 describe('auth0-authorizer', () => {
     const sandbox = sinon.createSandbox();

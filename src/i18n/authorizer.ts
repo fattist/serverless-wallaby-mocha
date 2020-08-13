@@ -1,4 +1,4 @@
-export enum Responses {
+export enum Authorizer {
     ERROR = 'Error: Invalid token',
     UNAUTHORIZED = 'Unauthorized'
 }

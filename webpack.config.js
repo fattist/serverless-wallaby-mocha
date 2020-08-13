@@ -20,7 +20,8 @@ module.exports = {
       '@i18n': path.resolve(__dirname, 'src', 'i18n'),
       '@routes': path.resolve(__dirname, 'src', 'routes'),
       '@services': path.resolve(__dirname, 'src', 'services'),
-      '@streams': path.resolve(__dirname, 'src', 'streams')
+      '@streams': path.resolve(__dirname, 'src', 'streams'),
+      '@tasks': path.resolve(__dirname, 'src', 'tasks')
     },
     modules: ['node_modules']
   },

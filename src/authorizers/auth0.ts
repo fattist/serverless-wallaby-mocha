@@ -5,7 +5,7 @@ import { Context } from 'aws-lambda';
 import * as jwt from 'jsonwebtoken';
 import * as jwksClient from 'jwks-rsa';
 
-import { Responses as lang } from '@i18n/authorizer';
+import { Authorizer as lang } from '@i18n/authorizer';
 import { Authorizer, Callback } from '@helpers/interfaces/all';
 
 export const authorize = (event: any, _context: Context, callback: Callback): void => {

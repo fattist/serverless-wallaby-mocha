@@ -11,7 +11,12 @@ provider:
     ENVIRONMENT: ${self:provider.stage}
     REGION: ${self:provider.region}
   logs:
-    restApi: true
+    restApi:
+      fullExecutionData: false
+      level: ERROR
+      websocket:
+        level: ERROR
+        fullExecutionData: false
   tags:
     provider: serverless
   tracing:
@@ -22,15 +27,15 @@ provider:
       - ${ssm:/development/vpc/sg/apigw/id}
     subnetIds: ${ssm:/development/vpc/subnet/private/arns~split}
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: Allow
       Action:
         - "dynamodb:*"
       Resource:
         - "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/*"
-    - Effect: "Allow"
+    - Effect: Allow
       Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
       Resource:
         - "*"
 
@@ -42,7 +47,6 @@ custom:
 functions:
   auth0:
     handler: handlers/authorizer.authenticate
-    resultTtlInSeconds: 0
     environment:
       A0_ALGORITHM: RS256
       A0_DOMAIN: mhp.us.auth0.com
@@ -63,17 +67,58 @@ functions:
           connectionType: vpc-link
           connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
-  register:
-    handler: handlers/user.register
+  login:
+    handler: handlers/user.session
+    environment:
+      A0_DOMAIN: mhp.us.auth0.com
+      A0_CLIENT_ID: ${ssm:/development/vendor/auth0/client/id~true}
+      A0_CLIENT_SECRET: ${ssm:/development/vendor/auth0/client/secret~true}
     events:
       - http:
-          path: /register
-          method: get
+          path: /login
+          method: post
           connectionType: vpc-link
           connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
+  mfa:
+    handler: handlers/user.mfa
+    resultTtlInSeconds: 0
+    environment:
+      A0_DOMAIN: mhp.us.auth0.com
+      A0_CLIENT_ID: ${ssm:/development/vendor/auth0/client/id~true}
+      A0_CLIENT_SECRET: ${ssm:/development/vendor/auth0/client/secret~true}
+    events:
+      - http:
+          path: /mfa
+          method: post
+          cors: true
+  register:
+    handler: handlers/user.signup
+    resultTtlInSeconds: 0
+    environment:
+      A0_DOMAIN: mhp.us.auth0.com
+      A0_CLIENT_ID: ${ssm:/development/vendor/auth0/client/id~true}
+      A0_CLIENT_SECRET: ${ssm:/development/vendor/auth0/client/secret~true}
+    events:
+      - http:
+          path: /register
+          method: post
+          cors: true
   streamsUser:
     handler: handlers/streams.user
+    environment:
+      REGISTRATION_ARN: "arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:stateMachine:${self:service}-${self:provider.stage}-registration"
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - states:DescribeStateMachine
+          - states:ListActivities
+          - states:ListExecutions
+          - states:ListStateMachines
+          - states:StartExecution
+          - states:UpdateStateMachine
+        Resource:
+          - "arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:stateMachine:*"
     events:
       - stream:
           arn: ${ssm:/development/ddb/stream/arn}
@@ -84,29 +129,58 @@ functions:
           destinations:
             onFailure: ${ssm:/development/sns/dlq/stream/arn}
   user:
-    handler: handlers/graphql.user
+    handler: handlers/user.query
+    resultTtlInSeconds: 0
+    environment:
+      A0_DOMAIN: mhp.us.auth0.com
+      A0_CLIENT_ID: ${ssm:/development/vendor/auth0/client/id~true}
+      A0_CLIENT_SECRET: ${ssm:/development/vendor/auth0/client/secret~true}
     events:
       - http:
-          path: /graphql
-          method: get
-          authorizer: auth0
-          connectionType: vpc-link
-          connectionId: ${ssm:/development/vpc/apigw/link/id~true}
-          cors: true
-      - http:
-          path: /graphql
+          path: /user
           method: post
           authorizer: auth0
           connectionType: vpc-link
           connectionId: ${ssm:/development/vpc/apigw/link/id~true}
           cors: true
+  mixpanel:
+    handler: handlers/bi.mixpanel
+    resultTtlInSeconds: 0
+  signup:
+    handler: handlers/bi.mixpanel
+    resultTtlInSeconds: 0
+
+stepFunctions:
+  stateMachines:
+    registration:
+      name: "${self:service}-${self:provider.stage}-registration"
+      definition:
+        StartAt: beacon
+        States:
+          beacon:
+            Type: Task
+            Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-mixpanel"
+            End: true
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
 
 package:
   individually: true
 
 plugins:
   - serverless-webpack
-  - serverless-offline
+  - serverless-iam-roles-per-function
   - serverless-step-functions
   - serverless-pseudo-parameters
+  - serverless-offline
   # - serverless-plugin-warmup

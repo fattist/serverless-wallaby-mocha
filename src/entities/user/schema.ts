@@ -5,7 +5,10 @@ export const schema: typeof GraphQLSchema = buildSchema(`
     type User {
         email: String!
         sub: String
-        createdAt: String
+    }
+
+    type Mutation {
+        register(email: String!, name: String, password: String!): User
     }
 
     type Query {

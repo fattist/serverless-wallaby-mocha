@@ -22,6 +22,7 @@ module.exports = w => {
             'src/routes/*.ts',
             'src/services/*.ts',
             'src/streams/*.ts',
+            'src/tasks/*.ts',
             'src/entities/*/*.ts',
             'src/helpers/*/*.ts'
         ],

@@ -15,6 +15,15 @@ export interface Authorizer {
 
 export interface Callback { (err: any|null, handler?: any): void }
 
+export interface Generic {
+    [key: string]: unknown
+}
+
+export interface Response {
+    statusCode: number,
+    body: string
+}
+
 export interface Route {
     [key: string]: APIGatewayProxyHandler
 }

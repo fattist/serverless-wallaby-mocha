@@ -1,3 +1,7 @@
+export interface Error {
+    [key: string]: { [key: string]: string }
+}
+
 export interface UserInfo {
     sub: string,
     nickname: string,

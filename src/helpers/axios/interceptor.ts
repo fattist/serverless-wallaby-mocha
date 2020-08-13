@@ -3,6 +3,8 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { Error } from '@helpers/interfaces/auth0';
+
 declare module 'axios' {
     interface AxiosResponse<T=any> extends Promise<T> { }
 }
@@ -39,7 +41,7 @@ export abstract class HttpClient {
         );
     };
 
-    protected _handleError = (error: any) => Promise.reject(error.response.data);
+    protected _handleError = (error: Error): Promise<string> => Promise.reject(error.response.data);
     private _handleResponse = ({ data }: AxiosResponse) => data;
     private _handleRequest = (config: AxiosRequestConfig) => {
         config.headers['Authorization'] = `Bearer ${this.bearerToken}`;

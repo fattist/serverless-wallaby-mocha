@@ -22,7 +22,8 @@
       "@i18n/*": ["src/i18n/*"],
       "@routes/*": ["src/routes/*"],
       "@services/*": ["src/services/*"],
-      "@streams/*": ["src/streams/*"]
+      "@streams/*": ["src/streams/*"],
+      "@tasks/*": ["src/tasks/*"]
     }
   },
   "include": ["./**/*.ts"],
